@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.time_tracking.Time_tracking.model.User;
 
@@ -58,4 +60,33 @@ public class UserRepository {
             throw new RuntimeException("User could not be loaded.", e);
         }
     }
+
+    public List<User> findAllUsers() {
+    String sql = """
+        SELECT username FROM users
+                """;
+
+    List<User> users = new ArrayList<>();
+
+    try (Connection con = Database.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            User user = new User();
+            user.setUsername(rs.getString("username"));
+            users.add(user);
+        }
+
+        return users;
+
+    } catch (SQLException e) {
+        throw new RuntimeException("Users could not be loaded.", e);
+    }
 }
+  
+        
+    }
+
+
+
