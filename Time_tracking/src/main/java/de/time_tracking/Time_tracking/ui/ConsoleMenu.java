@@ -19,6 +19,7 @@ public class ConsoleMenu {
             System.out.println("1. Create user");
             System.out.println("2. Login");
             System.out.println("3. Show all user");
+            System.out.println("4. Select user");
             System.out.println("0. Exit");
 
             System.out.print("Selection: ");
@@ -52,7 +53,20 @@ public class ConsoleMenu {
                         for (User u : users) {
                             System.out.println(u.getUsername());
                         }
-                    }      
+                    }
+                case "4":
+                    System.out.print("Which user would you like to find? ");
+                    String searchUsername = scanner.nextLine();
+
+                    User person = userService.findUser(searchUsername);
+
+                    if (person == null) {
+                        System.out.println("User not found");
+                    } else {
+                        System.out.println("username " + person.getUsername() + " " + "id: " + person.getId() + " Role: " + person.getRole());
+
+                    }
+                    break;
 
                 case "0":
                     running = false;
