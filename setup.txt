@@ -1,7 +1,0 @@
-
-Standardsetup Terminalbefehl
-mvn archetype:generate ^
- -DgroupId=de.mherrndoerfer ^
- -DartifactId=zeiterfassung ^
- -DarchetypeArtifactId=maven-archetype-quickstart ^
- -DinteractiveMode=false
