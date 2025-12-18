@@ -1,0 +1,5 @@
+de\mherrndoerfer\Time_tracking\repository\Database.class
+de\mherrndoerfer\Time_tracking\model\User.class
+de\mherrndoerfer\Time_tracking\service\UserService.class
+de\mherrndoerfer\Time_tracking\ui\ConsoleMenu.class
+de\mherrndoerfer\Time_tracking\repository\UserRepository.class
