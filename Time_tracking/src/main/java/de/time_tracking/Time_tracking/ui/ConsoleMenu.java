@@ -41,9 +41,23 @@ public class ConsoleMenu {
                         System.out.println("Username already exists");
                     }
                     break;
-                case "2":
-                    System.out.println("Login");
-                    break;
+                    case "2":
+                    System.out.print("Username: ");
+                    String Loginusername = scanner.nextLine();
+
+                    System.out.print("Password: ");
+                    String Loginpassword = scanner.nextLine();
+
+                    boolean Loggedin = userService.UserLogin(Loginusername, Loginpassword);
+
+                    if (Loggedin) {
+                        System.out.println("Login successfully");
+                    } else {
+                        System.out.println("Incorrect username or password");
+                    }
+                    break; 
+
+                
                 case "3":
                     System.out.println("list of all users:");
                     List<User> users = userService.getAllUsers();
@@ -53,7 +67,7 @@ public class ConsoleMenu {
                         for (User u : users) {
                             System.out.println(u.getUsername());
                         }
-                    }
+                    } break;
                 case "4":
                     System.out.print("Which user would you like to find? ");
                     String searchUsername = scanner.nextLine();
@@ -63,7 +77,7 @@ public class ConsoleMenu {
                     if (person == null) {
                         System.out.println("User not found");
                     } else {
-                        System.out.println("username " + person.getUsername() + " " + "id: " + person.getId() + " Role: " + person.getRole());
+                        System.out.println("username " + person.getUsername() + " " + "id: " + person.getId() + " Role: " + person.getRole() + " passwort: " + person.getPasswordHash());
 
                     }
                     break;

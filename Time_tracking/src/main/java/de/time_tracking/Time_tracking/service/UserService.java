@@ -27,6 +27,16 @@ public class UserService {
         return userRepository.findAllUsers();
     }
 
+    public boolean UserLogin(String username, String password) {
+        User user = userRepository.findByUsername(username);
+        if(user != null && user.getPasswordHash().equals((password))) 
+            { return true; 
+
+            } return false; 
+        }
+
+    
+
 
 
 }
