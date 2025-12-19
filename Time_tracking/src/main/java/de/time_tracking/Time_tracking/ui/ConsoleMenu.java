@@ -7,6 +7,7 @@ import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.service.UserService;
 import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
 import java.nio.charset.StandardCharsets;
+import de.time_tracking.Time_tracking.model.Role;
 
 public class ConsoleMenu {
     
@@ -35,12 +36,12 @@ public class ConsoleMenu {
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
 
-                    System.out.print("Role: ");
-                    String role = scanner.nextLine();
+                    System.out.print("Role (USER / ADMIN): ");
+                    String roleInput = scanner.nextLine();
 
 
                     try {
-                        userService.registerUser(username, password,role);
+                        userService.registerUser(username, password,roleInput);
                         System.out.println("User created.");
                     } catch (UsernameAlreadyExistsException e) {
                         System.out.println(e.getMessage());

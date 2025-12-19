@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.time_tracking.Time_tracking.model.User;
+import de.time_tracking.Time_tracking.model.Role;
+
 
 public class UserRepository {
 
@@ -22,7 +24,7 @@ public class UserRepository {
 
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPasswordHash());
-            ps.setString(3, user.getRole());
+            ps.setString(3, user.getRole().name());
 
             ps.executeUpdate();
 
@@ -51,7 +53,7 @@ public class UserRepository {
                 user.setId(rs.getLong("id"));
                 user.setUsername(rs.getString("username"));
                 user.setPasswordHash(rs.getString("password_hash"));
-                user.setRole(rs.getString("role"));
+                user.setRole(Role.valueOf(rs.getString("role")));
                 return user;
             }
 
@@ -81,7 +83,7 @@ public class UserRepository {
                 user.setId(rs.getLong("id"));
                 user.setUsername(rs.getString("username"));
                 user.setPasswordHash(rs.getString("password_hash"));
-                user.setRole(rs.getString("role"));
+                user.setRole(Role.valueOf(rs.getString("role")));
                 return user;
             }
 
