@@ -3,6 +3,8 @@ package de.time_tracking.Time_tracking.ui;
 import java.util.List;
 import java.util.Scanner;
 
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+
 import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.service.UserService;
 import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
@@ -13,6 +15,7 @@ public class ConsoleMenu {
     
     private final Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     private final UserService userService = new UserService();
+    Argon2PasswordEncoder encoder = new Argon2PasswordEncoder(32,64,1,15*1024,2);
 
 
     public void start() {
@@ -35,13 +38,14 @@ public class ConsoleMenu {
 
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
+                    String encodedPassword = encoder.encode(password);
 
                     System.out.print("Role (USER / ADMIN): ");
                     String roleInput = scanner.nextLine();
 
 
                     try {
-                        userService.registerUser(username, password,roleInput);
+                        userService.registerUser(username, encodedPassword,roleInput);
                         System.out.println("User created.");
                     } catch (UsernameAlreadyExistsException e) {
                         System.out.println(e.getMessage());
