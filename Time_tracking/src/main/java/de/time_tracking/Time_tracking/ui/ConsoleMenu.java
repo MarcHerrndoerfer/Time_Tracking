@@ -48,10 +48,7 @@ public class ConsoleMenu {
                         System.out.println(e.getMessage());
                     }
                     
-                    
-                        for (char c : username.toCharArray()) {
-                            System.out.println((int) c);
-                        }
+
 
 
 
