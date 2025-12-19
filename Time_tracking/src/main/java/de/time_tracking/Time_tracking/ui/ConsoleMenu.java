@@ -5,10 +5,12 @@ import java.util.Scanner;
 
 import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.service.UserService;
+import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
+import java.nio.charset.StandardCharsets;
 
 public class ConsoleMenu {
     
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     private final UserService userService = new UserService();
 
 
@@ -33,31 +35,44 @@ public class ConsoleMenu {
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
 
-                    boolean created = userService.registerUser(username, password, "USER");
+                    System.out.print("Role: ");
+                    String role = scanner.nextLine();
 
-                    if (created) {
-                        System.out.println("User successfully created");
-                    } else {
-                        System.out.println("Username already exists");
+
+                    try {
+                        userService.registerUser(username, password,role);
+                        System.out.println("User created.");
+                    } catch (UsernameAlreadyExistsException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
+                    
+                    
+                        for (char c : username.toCharArray()) {
+                            System.out.println((int) c);
+                        }
+
+
+
                     break;
-                    case "2":
+                case "2":
                     System.out.print("Username: ");
-                    String Loginusername = scanner.nextLine();
+                    String loginusername = scanner.nextLine();
 
                     System.out.print("Password: ");
-                    String Loginpassword = scanner.nextLine();
+                    String loginpassword = scanner.nextLine();
 
-                    boolean Loggedin = userService.UserLogin(Loginusername, Loginpassword);
+                    boolean loggedin = userService.login(loginusername, loginpassword);
 
-                    if (Loggedin) {
+                    if (loggedin) {
                         System.out.println("Login successfully");
                     } else {
                         System.out.println("Incorrect username or password");
                     }
                     break; 
 
-                
+            
                 case "3":
                     System.out.println("list of all users:");
                     List<User> users = userService.getAllUsers();
@@ -67,7 +82,8 @@ public class ConsoleMenu {
                         for (User u : users) {
                             System.out.println(u.getUsername());
                         }
-                    } break;
+                    } 
+                    break;
                 case "4":
                     System.out.print("Which user would you like to find? ");
                     String searchUsername = scanner.nextLine();
@@ -88,7 +104,9 @@ public class ConsoleMenu {
                 default:
                     System.out.println("Invalid input");
             }
+            
         }
+        
     }
 
 }

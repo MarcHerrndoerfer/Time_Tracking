@@ -8,15 +8,18 @@ import de.time_tracking.Time_tracking.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository = new UserRepository();
+    private final PasswordPolicyService passwordPolicyService = new PasswordPolicyService();
 
-    public boolean registerUser(String username, String password, String role) {
+    public void registerUser(String username, String password, String role) {
         if (userRepository.findByUsername(username) != null) {
-            return false;
+            throw new UsernameAlreadyExistsException("Username already exists");
         }
 
-        User user = new User(username, password, role);
+        
+        passwordPolicyService.validate(password);
+
+        User user = new User(username,(password), role);
         userRepository.create(user);
-        return true;
     }
 
     public User findUser(String username) {
@@ -27,19 +30,17 @@ public class UserService {
         return userRepository.findAllUsers();
     }
 
-    public boolean UserLogin(String username, String password) {
+    public boolean login(String username, String password) {
         User user = userRepository.findByUsername(username);
-        if(user != null && user.getPasswordHash().equals((password))) 
-            { return true; 
-
-            } return false; 
+        if (user != null && user.getPasswordHash().equals(password)) {
+            return true;
         }
-
-    
-
-
-
+        return false;
+    }
 }
+
+
+
 
 
     
