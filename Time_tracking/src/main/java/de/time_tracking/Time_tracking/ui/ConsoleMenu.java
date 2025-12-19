@@ -5,10 +5,12 @@ import java.util.Scanner;
 
 import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.service.UserService;
+import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
+import java.nio.charset.StandardCharsets;
 
 public class ConsoleMenu {
     
-    private final Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     private final UserService userService = new UserService();
 
 
@@ -19,6 +21,7 @@ public class ConsoleMenu {
             System.out.println("1. Create user");
             System.out.println("2. Login");
             System.out.println("3. Show all user");
+            System.out.println("4. Select user");
             System.out.println("0. Exit");
 
             System.out.print("Selection: ");
@@ -32,17 +35,41 @@ public class ConsoleMenu {
                     System.out.print("Password: ");
                     String password = scanner.nextLine();
 
-                    boolean created = userService.registerUser(username, password, "USER");
+                    System.out.print("Role: ");
+                    String role = scanner.nextLine();
 
-                    if (created) {
-                        System.out.println("User successfully created");
-                    } else {
-                        System.out.println("Username already exists");
+
+                    try {
+                        userService.registerUser(username, password,role);
+                        System.out.println("User created.");
+                    } catch (UsernameAlreadyExistsException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
+                    
+
+
+
+
                     break;
                 case "2":
-                    System.out.println("Login");
-                    break;
+                    System.out.print("Username: ");
+                    String loginusername = scanner.nextLine();
+
+                    System.out.print("Password: ");
+                    String loginpassword = scanner.nextLine();
+
+                    boolean loggedin = userService.login(loginusername, loginpassword);
+
+                    if (loggedin) {
+                        System.out.println("Login successfully");
+                    } else {
+                        System.out.println("Incorrect username or password");
+                    }
+                    break; 
+
+            
                 case "3":
                     System.out.println("list of all users:");
                     List<User> users = userService.getAllUsers();
@@ -52,7 +79,21 @@ public class ConsoleMenu {
                         for (User u : users) {
                             System.out.println(u.getUsername());
                         }
-                    }      
+                    } 
+                    break;
+                case "4":
+                    System.out.print("Which user would you like to find? ");
+                    String searchUsername = scanner.nextLine();
+
+                    User person = userService.findUser(searchUsername);
+
+                    if (person == null) {
+                        System.out.println("User not found");
+                    } else {
+                        System.out.println("username " + person.getUsername() + " " + "id: " + person.getId() + " Role: " + person.getRole() + " passwort: " + person.getPasswordHash());
+
+                    }
+                    break;
 
                 case "0":
                     running = false;
@@ -60,7 +101,9 @@ public class ConsoleMenu {
                 default:
                     System.out.println("Invalid input");
             }
+            
         }
+        
     }
 
 }

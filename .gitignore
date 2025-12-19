@@ -3,3 +3,5 @@ target/
 .vscode/
 *.db
 setup.txt
+.env
+.DS_Store

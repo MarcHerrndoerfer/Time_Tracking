@@ -31,6 +31,38 @@ public class UserRepository {
         }
     }
 
+    public User login(String username, String passwordHash) {
+        String sql = """
+            SELECT id, username, password_hash, role
+            FROM users
+            WHERE username = ? AND password_hash = ?
+            """;
+
+        try (Connection con = Database.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, passwordHash);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setId(rs.getLong("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPasswordHash(rs.getString("password_hash"));
+                user.setRole(rs.getString("role"));
+                return user;
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to login", e);
+        }
+    }
+
+
     public User findByUsername(String username) {
         String sql = """
             SELECT id, username, password_hash, role
@@ -42,7 +74,6 @@ public class UserRepository {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, username);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
