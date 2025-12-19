@@ -59,6 +59,10 @@ public class UserService {
 
     }
 
+    public void deleteAllUSers()throws SQLException{
+        userRepository.deleteAllUSers();
+    }
+
 }
 
 

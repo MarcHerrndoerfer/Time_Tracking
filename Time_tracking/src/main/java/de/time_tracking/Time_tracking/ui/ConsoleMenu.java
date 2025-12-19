@@ -29,6 +29,7 @@ public class ConsoleMenu {
             System.out.println("3. Show all user");
             System.out.println("4. Select user");
             System.out.println("5. Delete user");
+            System.out.println("6. Delete all");
             System.out.println("0. Exit");
 
             System.out.print("Selection: ");
@@ -117,7 +118,24 @@ public class ConsoleMenu {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
+                    } break;
+
+                case "6":
+                    System.out.println("Do you really want to delete all users? Y/N");
+                    String answer = scanner.nextLine();
+                    if ("Y".equals(answer)) {
+                        try {
+                            userService.deleteAllUSers();
+                            System.out.println("All entries deleted");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        break;
                     }
+                    break;
+
+
 
                 
 

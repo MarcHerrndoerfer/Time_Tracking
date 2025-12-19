@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.cj.protocol.a.SqlDateValueEncoder;
+
 import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.model.Role;
 
@@ -107,6 +109,20 @@ public class UserRepository {
         } catch (SQLException e) {
             throw new RuntimeException("User could not be loaded.", e);
         }
+    }
+
+    public void deleteAllUSers() throws SQLException{
+        String sql = """
+                DELETE FROM users
+                """;
+        try (Connection con = Database.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("no entries available", e);
+        }
+
     }
 
     public List<User> findAllUsers() {
