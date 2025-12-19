@@ -94,6 +94,21 @@ public class UserRepository {
         }
     }
 
+    public void deleteUser(User user) throws SQLException {
+        String sql = """
+            DELETE FROM users
+            WHERE username = ?
+            """;
+        try (Connection con = Database.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, user.getUsername());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("User could not be loaded.", e);
+        }
+    }
+
     public List<User> findAllUsers() {
     String sql = """
         SELECT username FROM users

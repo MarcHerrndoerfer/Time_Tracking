@@ -1,5 +1,6 @@
 package de.time_tracking.Time_tracking.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import de.time_tracking.Time_tracking.model.User;
@@ -51,7 +52,12 @@ public class UserService {
     } catch (IllegalArgumentException e) {
         throw new IllegalArgumentException("Invalid role. Use USER or ADMIN.");
     }
-}
+    }
+
+    public void deleteUser(User user) throws SQLException{
+        userRepository.deleteUser(user);
+
+    }
 
 }
 
