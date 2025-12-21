@@ -9,6 +9,8 @@ import de.time_tracking.Time_tracking.model.User;
 import de.time_tracking.Time_tracking.service.UserService;
 import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
+
 import de.time_tracking.Time_tracking.model.Role;
 
 public class ConsoleMenu {
@@ -26,6 +28,8 @@ public class ConsoleMenu {
             System.out.println("2. Login");
             System.out.println("3. Show all user");
             System.out.println("4. Select user");
+            System.out.println("5. Delete user");
+            System.out.println("6. Delete all");
             System.out.println("0. Exit");
 
             System.out.print("Selection: ");
@@ -99,6 +103,42 @@ public class ConsoleMenu {
 
                     }
                     break;
+
+                case "5":
+                    System.out.println("Which user do you want to delete?");
+                    String deleteUsername = scanner.nextLine();
+                    User personToDelete = userService.findUser(deleteUsername);
+
+                    if (personToDelete == null){
+                        System.out.println("User not found");
+                    } else {
+                        try {
+                            userService.deleteUser(personToDelete);
+                            System.out.println("User" + personToDelete.getUsername() + " successfully deleted");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    } break;
+
+                case "6":
+                    System.out.println("Do you really want to delete all users? Y/N");
+                    String answer = scanner.nextLine();
+                    if ("Y".equals(answer)) {
+                        try {
+                            userService.deleteAllUSers();
+                            System.out.println("All entries deleted");
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        break;
+                    }
+                    break;
+
+
+
+                
+
 
                 case "0":
                     running = false;
