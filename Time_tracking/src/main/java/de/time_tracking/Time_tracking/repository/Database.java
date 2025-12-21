@@ -1,18 +1,18 @@
 package de.time_tracking.Time_tracking.repository;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class Database {
 
     private static final Dotenv dotenv = Dotenv.configure()
-            .directory("Time_Tracking")
-            .ignoreIfMissing()
-            .load();
+        .ignoreIfMissing()
+        .load();
+
 
     private static final String HOST = dotenv.get("MYSQL_HOST", "localhost");
     private static final String PORT = dotenv.get("MYSQL_PORT", "3306");
