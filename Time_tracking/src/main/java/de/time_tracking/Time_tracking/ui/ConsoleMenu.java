@@ -1,154 +1,223 @@
 package de.time_tracking.Time_tracking.ui;
 
+import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
-
 import de.time_tracking.Time_tracking.model.User;
+import de.time_tracking.Time_tracking.model.Role;
 import de.time_tracking.Time_tracking.service.UserService;
 import de.time_tracking.Time_tracking.service.UsernameAlreadyExistsException;
-import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
-
-import de.time_tracking.Time_tracking.model.Role;
 
 public class ConsoleMenu {
-    
+
     private final Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
     private final UserService userService = new UserService();
-    Argon2PasswordEncoder encoder = new Argon2PasswordEncoder(32,64,1,15*1024,2);
-
 
     public void start() {
-        boolean running = true;
+        System.out.println("######### Welcome to your Timetracker ###########");
 
-        while (running) {
-            System.out.println("1. Create user");
-            System.out.println("2. Login");
-            System.out.println("3. Show all user");
-            System.out.println("4. Select user");
-            System.out.println("5. Delete user");
-            System.out.println("6. Delete all");
+        while (true) {
+            User currentUser = authenticate();
+            if (currentUser == null) {
+                System.out.println("Bye.");
+                return;
+            }
+
+            System.out.println("Login successfully. Hello " + currentUser.getUsername());
+            mainMenu(currentUser);
+        }
+    }
+
+
+    private User authenticate() {
+        while (true) {
+            System.out.println();
+            System.out.println("1. Login");
+            System.out.println("2. Register");
             System.out.println("0. Exit");
 
             System.out.print("Selection: ");
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().trim();
 
             switch (input) {
                 case "1":
-                    System.out.print("Username: ");
-                    String username = scanner.nextLine();
+                    return handleLogin();
 
-                    System.out.print("Password: ");
-                    String password = scanner.nextLine();
-                    String encodedPassword = encoder.encode(password);
-
-                    System.out.print("Role (USER / ADMIN): ");
-                    String roleInput = scanner.nextLine();
-
-
-                    try {
-                        userService.registerUser(username, encodedPassword,roleInput);
-                        System.out.println("User created.");
-                    } catch (UsernameAlreadyExistsException e) {
-                        System.out.println(e.getMessage());
-                    } catch (IllegalArgumentException e) {
-                        System.out.println(e.getMessage());
-                    }
-                    
-
-
-
-
-                    break;
                 case "2":
-                    System.out.print("Username: ");
-                    String loginusername = scanner.nextLine();
-
-                    System.out.print("Password: ");
-                    String loginpassword = scanner.nextLine();
-
-                    boolean loggedin = userService.login(loginusername, loginpassword);
-
-                    if (loggedin) {
-                        System.out.println("Login successfully");
-                    } else {
-                        System.out.println("Incorrect username or password");
-                    }
-                    break; 
-
-            
-                case "3":
-                    System.out.println("list of all users:");
-                    List<User> users = userService.getAllUsers();
-                    if (users.isEmpty()) {
-                        System.out.println("No Users available ");
-                    } else {
-                        for (User u : users) {
-                            System.out.println(u.getUsername());
-                        }
-                    } 
+                    handleRegister();
                     break;
-                case "4":
-                    System.out.print("Which user would you like to find? ");
-                    String searchUsername = scanner.nextLine();
-
-                    User person = userService.findUser(searchUsername);
-
-                    if (person == null) {
-                        System.out.println("User not found");
-                    } else {
-                        System.out.println("username " + person.getUsername() + " " + "id: " + person.getId() + " Role: " + person.getRole() + " passwort: " + person.getPasswordHash());
-
-                    }
-                    break;
-
-                case "5":
-                    System.out.println("Which user do you want to delete?");
-                    String deleteUsername = scanner.nextLine();
-                    User personToDelete = userService.findUser(deleteUsername);
-
-                    if (personToDelete == null){
-                        System.out.println("User not found");
-                    } else {
-                        try {
-                            userService.deleteUser(personToDelete);
-                            System.out.println("User" + personToDelete.getUsername() + " successfully deleted");
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    } break;
-
-                case "6":
-                    System.out.println("Do you really want to delete all users? Y/N");
-                    String answer = scanner.nextLine();
-                    if ("Y".equals(answer)) {
-                        try {
-                            userService.deleteAllUSers();
-                            System.out.println("All entries deleted");
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        break;
-                    }
-                    break;
-
-
-
-                
-
 
                 case "0":
-                    running = false;
-                    break;
+                    return null;
+
                 default:
                     System.out.println("Invalid input");
             }
-            
         }
-        
     }
 
+    private User handleLogin() {
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        boolean loggedIn = userService.login(username, password);
+        if (!loggedIn) {
+            System.out.println("Incorrect username or password");
+            return null;
+        }
+
+        return userService.findUser(username);
+    }
+
+    private void handleRegister() {
+        System.out.print("Username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        System.out.print("Role (USER / ADMIN): ");
+        String roleInput = scanner.nextLine();
+
+        try {
+            userService.registerUser(username, password, roleInput);
+            System.out.println("User created. You can now login.");
+        } catch (UsernameAlreadyExistsException e) {
+            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    private void mainMenu(User currentUser) {
+        boolean running = true;
+
+        while (running) {
+            System.out.println();
+            System.out.println("1. Show all users");
+            System.out.println("2. Select user");
+
+            if (currentUser.getRole() == Role.ADMIN) {
+                System.out.println("3. Delete user");
+                System.out.println("4. Delete all users");
+            }
+
+            System.out.println("9. Logout");
+            System.out.println("0. Exit");
+
+            System.out.print("Selection: ");
+            String input = scanner.nextLine().trim();
+
+            switch (input) {
+                case "1":
+                    handleShowAllUsers();
+                    break;
+
+                case "2":
+                    handleSelectUser();
+                    break;
+
+                case "3":
+                    if (currentUser.getRole() == Role.ADMIN) {
+                        handleDeleteUser();
+                    } else {
+                        System.out.println("Access denied");
+                    }
+                    break;
+
+                case "4":
+                    if (currentUser.getRole() == Role.ADMIN) {
+                        handleDeleteAllUsers();
+                    } else {
+                        System.out.println("Access denied");
+                    }
+                    break;
+
+                case "9":
+                    System.out.println("Logged out.");
+                    running = false;
+                    break;
+
+                case "0":
+                    System.out.println("Bye.");
+                    System.exit(0);
+
+                default:
+                    System.out.println("Invalid input");
+            }
+        }
+    }
+
+
+    private void handleShowAllUsers() {
+        System.out.println("List of all users:");
+        List<User> users = userService.getAllUsers();
+
+        if (users.isEmpty()) {
+            System.out.println("No users available");
+            return;
+        }
+
+        for (User u : users) {
+            System.out.println(u.getUsername());
+        }
+    }
+
+    private void handleSelectUser() {
+        System.out.print("Which user would you like to find? ");
+        String username = scanner.nextLine();
+
+        User user = userService.findUser(username);
+        if (user == null) {
+            System.out.println("User not found");
+            return;
+        }
+
+        System.out.println(
+            "Username: " + user.getUsername() +
+            " | ID: " + user.getId() +
+            " | Role: " + user.getRole()
+        );
+    }
+
+    private void handleDeleteUser() {
+        System.out.print("Which user do you want to delete? ");
+        String username = scanner.nextLine();
+
+        User user = userService.findUser(username);
+        if (user == null) {
+            System.out.println("User not found");
+            return;
+        }
+
+        try {
+            userService.deleteUser(user);
+            System.out.println("User " + username + " successfully deleted");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDeleteAllUsers() {
+        System.out.print("Do you really want to delete all users? Y/N ");
+        String answer = scanner.nextLine().trim();
+
+        if (!"Y".equalsIgnoreCase(answer)) {
+            System.out.println("Canceled");
+            return;
+        }
+
+        try {
+            userService.deleteAllUSers();
+            System.out.println("All users deleted");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
