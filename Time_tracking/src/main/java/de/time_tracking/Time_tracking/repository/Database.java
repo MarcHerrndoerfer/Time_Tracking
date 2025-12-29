@@ -10,6 +10,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class Database {
 
     private static final Dotenv dotenv = Dotenv.configure()
+        .directory("Time_tracking")
         .ignoreIfMissing()
         .load();
 
